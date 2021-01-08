@@ -1,0 +1,25 @@
+{
+  "name": "enchanted-puppeteer",
+  "version": "0.0.1",
+  "description": "Cooperative request interception for Puppeteer",
+  "main": "dist/esm/index.js",
+  "author": "Ben Allfree (@benallfree)",
+  "license": "MIT",
+  "scripts": {
+    "build": "rimraf dist && tsc",
+    "test": "ts-node ./test/cli.ts"
+  },
+  "devDependencies": {
+    "install-peers-cli": "^2.2.0",
+    "prettier": "^2.2.1",
+    "prettier-plugin-organize-imports": "^1.1.1",
+    "rimraf": "^3.0.2",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.1.3"
+  },
+  "dependencies": {
+    "@types/puppeteer": "^5.4.2",
+    "devtools-protocol": "^0.0.841450",
+    "puppeteer": "^5.5.0"
+  }
+}
