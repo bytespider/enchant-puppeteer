@@ -90,29 +90,34 @@ export const enchantHTTPRequest = (klass: typeof HTTPRequest) => {
     this.deferredRequestHandlers.push(fn)
   }
 
-  const compatibility = Promise.reject(
-    `Do not await this promise. Use onInterceptFinalized(), onInterceptAborted(), onInterceptResponded(), or onInterceptContinued() listeners instead.`
-  )
+  const compatibility = () =>
+    new Proxy(Promise.resolve(), {
+      get(target, p) {
+        throw new Error(
+          `Deprecated. Do not await this promise. Use onInterceptFinalized(), onInterceptAborted(), onInterceptResponded(), or onInterceptContinued() listeners instead.`
+        )
+      },
+    })
 
   const oldContinue = p.continue
   p.continue = async function (overrides) {
     this.continueRequestOverrides = overrides
     this.shouldContinue = true
-    return compatibility
+    return compatibility()
   }
 
   const oldRespond = p.respond
   p.respond = async function (response) {
     this.responseForRequest = response
     this.shouldRespond = true
-    return compatibility
+    return compatibility()
   }
 
   const oldAbort = p.abort
   p.abort = async function (errorCode) {
     this.shouldAbort = true
     this.abortErrorCode = errorCode
-    return compatibility
+    return compatibility()
   }
 
   p.finalizeInterception = async function () {
