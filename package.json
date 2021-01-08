@@ -1,5 +1,5 @@
 {
-  "name": "enchanted-puppeteer",
+  "name": "enchant-puppeteer",
   "version": "0.0.1",
   "description": "Cooperative request interception for Puppeteer",
   "main": "dist/esm/index.js",
