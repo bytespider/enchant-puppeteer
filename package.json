@@ -1,8 +1,8 @@
 {
   "name": "enchant-puppeteer",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Cooperative request interception for Puppeteer",
-  "main": "dist/esm/index.js",
+  "main": "dist/index.js",
   "author": "Ben Allfree (@benallfree)",
   "repository": "github:benallfree/enchant-puppeteer",
   "license": "MIT",
