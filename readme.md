@@ -109,14 +109,12 @@ with the request.
  * Pupeteer will pause request fulfillment until this and all handlers (async or not)
  * have been completed.
  */
-page.on('request', (req) => {
-  req.defer(async () => {
-    // do something async like a database lookup
-    const cachedPage = await db.find(req.url());
-    if (cachedPage) {
-      request.respond(cachedPage); // Respond with the cached page, if available
-    }
-  });
+page.on('request', async (req) => {
+  // do something async like a database lookup
+  const cachedPage = await db.find(req.url());
+  if (cachedPage) {
+    request.respond(cachedPage); // Respond with the cached page, if available
+  }
 });
 
 ```
