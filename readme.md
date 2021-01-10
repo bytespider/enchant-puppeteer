@@ -5,19 +5,6 @@ intercept handlers. No more `Request is already handled!` errors.
 
 Compatible with Puppeteer 3.x or greater.
 
-## What does it do?
-
-It solves a long-standing Puppeteer issue where multiple request intercept handlers would not work together because the first
-one to call `abort()`, `respond()`, or `continue()` would prevent all the others from responding.
-
-After enchantment, Puppeteer will allow multiple request intercept handlers to play nicely together by execututing each and
-allowing each handler to call `abort()`, `respond()`, or `continue()`. After all handlers have run, including asynchronous handlers,
-Enchant Puppeteer will decide how to finalize the request interception:
-
-1. If any handler called `abort()`, the request will be aborted.
-2. If any handler called `respond()`, the a response will be sent.
-3. If no handler called `respond()` or `abort()`, the request will `continue()`'d.
-
 ## Installation
 
 ```
@@ -26,9 +13,15 @@ npm i enchant-puppeteer
 
 ## Basic Usage
 
-This example shows how to `enchantPuppeteer()`, then how to use `abort()`, `continue()`, and `respond()` are used
-cooperatively. This way, different
-concerns can be listening to `page.on('request', ...)` and cooperatively handle what to do.
+Call `enchantPuppeteer()` at initialization. Puppeteer will become enchanted.
+
+Enchanted Puppeteer will allow all handlers to call `abort()`, `respond()` and `continue()`, and will even await async handlers.
+
+After all handlers have finished, Enchanted Puppeteer will decide whether to `abort`, `respond`, or `continue` according to these rules:
+
+1. If any handler called `abort()`, the request will be aborted.
+2. If no handler called `abort()`, but any handler called `respond()`, the request will be responded.
+3. If no handler called `abort()` or `respond()`, the request will be continued. `continue()` is called by default, you do not need to call it explicitly.
 
 ```typescript
 const puppeteer = require('puppeteer');
@@ -51,7 +44,7 @@ const { enchantPuppeteer } = require('enchant-puppeteer')
    * execute though.
    */
   page.on('request', req=> {
-    req.abort() // Note: this now returns an resolved promise. It never throws.
+    req.abort() // Note: this now returns a resolved promise. It never throws.
   });
 
   /**
@@ -63,7 +56,7 @@ const { enchantPuppeteer } = require('enchant-puppeteer')
    * to check the current interception response and modify accordingly.
    */
   page.on('request', req=> {
-    req.respond({...req.respondForRequest}) // This no longer returns a promise
+    req.respond({...req.respondForRequest})
   });
 
   /**
@@ -78,7 +71,9 @@ const { enchantPuppeteer } = require('enchant-puppeteer')
    * you only need to call continue() yourself if you intend to modify the request.
    */
   page.on('request', req=> {
-    req.continue({...req.continueRequestOverrides}) // This is not necessary, it is done for you.
+    // This is only necessary if you want to modify something.
+    // Otherwise, it is done for you.
+    req.continue({...req.continueRequestOverrides})
   });
 
   await page.goto('https://example.com');
@@ -132,12 +127,10 @@ enchantPuppeteer({ modulePath: '/path/to/module/puppeteer'} )
 
 You can enchat multiple Puppeteer modules as well.
 
-### Debugging
+## Why does this exist?
 
-```typescript
-// info
-// error (default)
-// debug
-// none
-enchantPuppeteer({ logLevel: 'info' })
-```
+Since its release, Puppeteer has expected only ONE intercept handler to call `abort()`, `respond()`, or `continue()`. This really throws a wrench in any attempt to write plugins or multiple intercept handlers that separate concerns.
+
+If a second handler attempts to call the above functions, the dreaded `Request is already handled!` exception will be thrown.
+
+Moreover, Puppeteer exepcts request handlers to be synchronous. This precludes any possibility of asynchronous operations in handlers.
