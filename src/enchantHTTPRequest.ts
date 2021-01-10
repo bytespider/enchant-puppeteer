@@ -45,7 +45,7 @@ export const enchantHTTPRequest = (modulePath: string) => {
   const oldKlass = HTTPRequestModule.HTTPRequest as typeof HTTPRequest
   const _EventEmitter = (() => {
     try {
-      findModule(modulePath, 'EventEmitter').EventEmitter
+      return require(findModule(modulePath, 'EventEmitter')).EventEmitter
     } catch {
       return require('events') // 3.x
     }
