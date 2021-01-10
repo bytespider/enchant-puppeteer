@@ -13,9 +13,7 @@ export const createLogger = (options?: Partial<LogOptions>) => {
 
   return {
     info: (...args: any[]) =>
-      ['info', 'debug', 'error'].includes(level)
-        ? console.log(...args)
-        : undefined,
+      ['info', 'debug'].includes(level) ? console.log(...args) : undefined,
     debug: (...args: any[]) =>
       ['debug'].includes(level) ? console.log(...args) : undefined,
     error: (...args: any[]) =>
