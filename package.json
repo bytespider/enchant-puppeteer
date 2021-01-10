@@ -1,6 +1,6 @@
 {
   "name": "enchant-puppeteer",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Cooperative request interception for Puppeteer",
   "main": "dist/index.js",
   "author": "Ben Allfree (@benallfree)",
@@ -11,7 +11,9 @@
     "watch": "yarn clean && tsc -w",
     "build": "yarn clean && tsc",
     "test:stock": "ts-node ./test/cli.ts",
-    "test:extra": "ts-node ./test/extra/cli.ts"
+    "test:5x": "yarn && cd test/5.x && yarn && ts-node cli.ts",
+    "test:4x": "yarn && cd test/5.x && yarn && ts-node cli.ts",
+    "test:3x": "yarn && cd test/5.x && yarn && ts-node cli.ts"
   },
   "devDependencies": {
     "install-peers-cli": "^2.2.0",
@@ -27,7 +29,7 @@
   "dependencies": {
     "@types/node": "^14.14.20",
     "@types/puppeteer": "^5.4.2",
-    "puppeteer": "^5.5.0"
+    "puppeteer": ">=3"
   },
   "resolutions": {
     "@types/puppeteer": "^5.4.2"
