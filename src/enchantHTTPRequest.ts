@@ -1,5 +1,4 @@
 import Protocol from 'devtools-protocol'
-import { resolve } from 'path'
 import { Request } from 'puppeteer'
 import { CDPSession } from 'puppeteer/lib/cjs/puppeteer/common/Connection'
 import { EventEmitter } from 'puppeteer/lib/cjs/puppeteer/common/EventEmitter'
@@ -8,6 +7,7 @@ import { debugError } from 'puppeteer/lib/cjs/puppeteer/common/helper'
 import { HTTPRequest } from 'puppeteer/lib/cjs/puppeteer/common/HTTPRequest'
 import { Handler } from 'puppeteer/lib/cjs/vendor/mitt/src'
 import { interceptedHTTPRequests } from '.'
+import { findModule } from './findModule'
 
 export type DeferredRequestHandler = () => PromiseLike<void>
 
@@ -42,23 +42,7 @@ export const RequestInterceptionOutcome = {
 } as const
 
 export const enchantHTTPRequest = (modulePath: string) => {
-  const HTTPRequestModule = (() => {
-    const paths = ['lib/cjs/puppeteer/common/HTTPRequest', 'lib/HTTPRequest'] // 5.x, 4.x, 3.x
-    for (let i = 0; i < paths.length; i++) {
-      const path = resolve(modulePath, paths[i])
-      try {
-        return (() => {
-          const module = require(path)
-          console.log(`Enchanting HTTPRequest ${path}`)
-          return module
-        })()
-      } catch {}
-    }
-
-    throw new Error(
-      `HTTPRequest not found at ${modulePath}. Only Puppeteer 3.x or above is supported, or your module path is wrong.`
-    )
-  })()
+  const HTTPRequestModule = findModule(modulePath, 'HTTPRequest')
   const oldKlass = HTTPRequestModule.HTTPRequest as typeof HTTPRequest
 
   const klass = function (
@@ -104,6 +88,7 @@ export const enchantHTTPRequest = (modulePath: string) => {
     }
 
     const oldContinue = oldKlass.prototype.continue
+
     obj.continue = async function (overrides) {
       this.continueRequestOverrides = overrides
       this.shouldContinue = true
@@ -171,6 +156,5 @@ export const enchantHTTPRequest = (modulePath: string) => {
     return obj
   }
 
-  // @ts-ignore
   HTTPRequestModule.HTTPRequest = klass
 }

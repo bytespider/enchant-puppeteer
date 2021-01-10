@@ -11,9 +11,9 @@
     "watch": "yarn clean && tsc -w",
     "build": "yarn clean && tsc",
     "test:stock": "ts-node ./test/cli.ts",
-    "test:5x": "yarn && cd test/5.x && yarn && ts-node cli.ts",
-    "test:4x": "yarn && cd test/5.x && yarn && ts-node cli.ts",
-    "test:3x": "yarn && cd test/5.x && yarn && ts-node cli.ts"
+    "test:5x": "yarn && yarn build && cd test/5.x && yarn && ts-node cli.ts",
+    "test:4x": "yarn && yarn build && cd test/5.x && yarn && ts-node cli.ts",
+    "test:3x": "yarn && yarn build && cd test/5.x && yarn && ts-node cli.ts"
   },
   "devDependencies": {
     "install-peers-cli": "^2.2.0",
