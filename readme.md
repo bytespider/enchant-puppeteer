@@ -12,7 +12,7 @@ one to call `abort()`, `respond()`, or `continue()` would prevent all the others
 
 Cooperative means that Puppeteer will allow multiple request intercept handlers to play nicely together by execututing each and
 allowing each handler to call `abort()`, `respond()`, or `continue()`. After all handlers have run, including asynchronous handlers,
-Enchanted Puppeteer will decide how to finalize the request interception:
+Enchant Puppeteer will decide how to finalize the request interception:
 
 1. If any handler called `abort()`, the request will be aborted.
 2. If any handler called `respond()`, the a response will be sent.
@@ -21,7 +21,7 @@ Enchanted Puppeteer will decide how to finalize the request interception:
 ## Installation
 
 ```
-npm i enchanted-puppeteer
+npm i enchant-puppeteer
 ```
 
 ## Basic Request Interception Usage
