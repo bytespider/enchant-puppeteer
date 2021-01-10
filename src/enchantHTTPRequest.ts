@@ -42,33 +42,24 @@ export const RequestInterceptionOutcome = {
 } as const
 
 export const enchantHTTPRequest = (modulePath: string) => {
-  const { HTTPRequestModule, oldKlass } = (() => {
-    // 5.x
-    try {
-      return (() => {
-        const path = resolve(modulePath, 'lib/cjs/puppeteer/common/HTTPRequest')
-        const HTTPRequestModule = require(path)
-        const oldKlass = HTTPRequestModule.HTTPRequest as typeof HTTPRequest
-        console.log(`Enchanting HTTPRequest ${path}`)
-        return { HTTPRequestModule, oldKlass }
-      })()
-    } catch {}
-
-    // 4.x, 3.x
-    try {
-      return (() => {
-        const path = resolve(modulePath, 'lib/HTTPRequest')
-        const HTTPRequestModule = require(path)
-        const oldKlass = HTTPRequestModule.HTTPRequest as typeof HTTPRequest
-        console.log(`Enchanting HTTPRequest ${path}`)
-        return { HTTPRequestModule, oldKlass }
-      })()
-    } catch {}
+  const HTTPRequestModule = (() => {
+    const paths = ['lib/cjs/puppeteer/common/HTTPRequest', 'lib/HTTPRequest'] // 5.x, 4.x, 3.x
+    for (let i = 0; i < paths.length; i++) {
+      const path = resolve(modulePath, paths[i])
+      try {
+        return (() => {
+          const module = require(path)
+          console.log(`Enchanting HTTPRequest ${path}`)
+          return module
+        })()
+      } catch {}
+    }
 
     throw new Error(
       `HTTPRequest not found at ${modulePath}. Only Puppeteer 3.x or above is supported, or your module path is wrong.`
     )
   })()
+  const oldKlass = HTTPRequestModule.HTTPRequest as typeof HTTPRequest
 
   const klass = function (
     client: CDPSession,
