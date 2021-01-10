@@ -1,11 +1,10 @@
 import Protocol from 'devtools-protocol'
-import { Request } from 'puppeteer'
-import { CDPSession } from 'puppeteer/lib/cjs/puppeteer/common/Connection'
-import { EventEmitter } from 'puppeteer/lib/cjs/puppeteer/common/EventEmitter'
-import { Frame } from 'puppeteer/lib/cjs/puppeteer/common/FrameManager'
-import { debugError } from 'puppeteer/lib/cjs/puppeteer/common/helper'
-import { HTTPRequest } from 'puppeteer/lib/cjs/puppeteer/common/HTTPRequest'
-import { Handler } from 'puppeteer/lib/cjs/vendor/mitt/src'
+import type { Request } from 'puppeteer'
+import type { CDPSession } from 'puppeteer/lib/cjs/puppeteer/common/Connection'
+import type { EventEmitter } from 'puppeteer/lib/cjs/puppeteer/common/EventEmitter'
+import type { Frame } from 'puppeteer/lib/cjs/puppeteer/common/FrameManager'
+import type { HTTPRequest } from 'puppeteer/lib/cjs/puppeteer/common/HTTPRequest'
+import type { Handler } from 'puppeteer/lib/cjs/vendor/mitt/src'
 import { interceptedHTTPRequests } from '.'
 import { findModule } from './findModule'
 
@@ -44,6 +43,14 @@ export const RequestInterceptionOutcome = {
 export const enchantHTTPRequest = (modulePath: string) => {
   const HTTPRequestModule = findModule(modulePath, 'HTTPRequest')
   const oldKlass = HTTPRequestModule.HTTPRequest as typeof HTTPRequest
+  const _EventEmitter = (() => {
+    try {
+      findModule(modulePath, 'EventEmitter').EventEmitter
+    } catch {
+      return require('events') // 3.x
+    }
+  })()
+  const debugError = findModule(modulePath, 'helper').debugError
 
   const klass = function (
     client: CDPSession,
@@ -66,7 +73,7 @@ export const enchantHTTPRequest = (modulePath: string) => {
     obj.shouldContinue = true // Continue by default
     obj.shouldRespond = false
     obj.shouldAbort = false
-    obj._finalizeEmitter = new EventEmitter()
+    obj._finalizeEmitter = new _EventEmitter()
     obj.deferredRequestHandlers = []
     interceptedHTTPRequests[interceptionId] = obj
 
