@@ -40,9 +40,16 @@ export const RequestInterceptionOutcome = {
   Finalized: 'finalized',
 } as const
 
+const enchanted = {}
+
 export const enchantHTTPRequest = (modulePath: string) => {
   const HTTPRequestModule = findModule(modulePath, 'HTTPRequest')
-  const oldKlass = HTTPRequestModule.HTTPRequest as typeof HTTPRequest
+  const oldKlass = HTTPRequestModule.HTTPRequest as typeof HTTPRequest & {
+    isEnchanted?: boolean
+  }
+
+  if (oldKlass.isEnchanted) return
+
   const _EventEmitter = (() => {
     try {
       return require(findModule(modulePath, 'EventEmitter')).EventEmitter
@@ -69,7 +76,6 @@ export const enchantHTTPRequest = (modulePath: string) => {
       redirectChain
     ) as unknown) as EnchantedHTTPRequest
 
-    obj.isEnchanted = true
     obj.shouldContinue = true // Continue by default
     obj.shouldRespond = false
     obj.shouldAbort = false
@@ -165,6 +171,7 @@ export const enchantHTTPRequest = (modulePath: string) => {
     }
     return obj
   }
+  klass.isEnchanted = true
 
   HTTPRequestModule.HTTPRequest = klass
 }

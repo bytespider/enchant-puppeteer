@@ -3,6 +3,7 @@ import { enchantPuppeteer } from '../../dist'
 
 puppeteer.launch().then(async (browser) => {
   enchantPuppeteer(`${__dirname}/node_modules/puppeteer`)
+  enchantPuppeteer(`${__dirname}/node_modules/puppeteer`)
 
   const page = await browser.newPage()
   page.setRequestInterception(true)
@@ -21,6 +22,7 @@ puppeteer.launch().then(async (browser) => {
 
   await page.goto('https://www.vanityfair.com')
   await page.screenshot({ path: 'stock.png', fullPage: true })
+  await page.goto('https://www.cnn.com')
 
   console.log(`All done, check the screenshots. ✨`)
   await browser.close()
