@@ -24,9 +24,10 @@ Enchant Puppeteer will decide how to finalize the request interception:
 npm i enchant-puppeteer
 ```
 
-## Basic Request Interception Usage
+## Basic Usage
 
-This example shows how `abort()`, `continue()`, and `respond()` are used cooperatively. This way, different
+This example shows how to `enchantPuppeteer()`, then how to use `abort()`, `continue()`, and `respond()` are used
+cooperatively. This way, different
 concerns can be listening to `page.on('request', ...)` and cooperatively handle what to do.
 
 ```typescript
@@ -34,7 +35,10 @@ const puppeteer = require('puppeteer');
 const { enchantPuppeteer } = require('enchant-puppeteer')
 
 (async () => {
+  // First, we must enchant the Puppeteer module. By default, it enchants ./node_modules/puppeteer
   enchantPuppeteer()
+
+  // Magic! Create a browser and page just like normal!
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
@@ -59,7 +63,7 @@ const { enchantPuppeteer } = require('enchant-puppeteer')
    * to check the current interception response and modify accordingly.
    */
   page.on('request', req=> {
-    req.respond({...req.respondForRequest, ...}) // This no longer returns a promise
+    req.respond({...req.respondForRequest}) // This no longer returns a promise
   });
 
   /**
