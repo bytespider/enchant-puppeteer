@@ -159,6 +159,9 @@ export const enchantHTTPRequest = (modulePath: string) => {
 
           debugError(error)
         })
+        .finally(() => {
+          delete interceptedHTTPRequests[interceptionId]
+        })
     }
     return obj
   }
