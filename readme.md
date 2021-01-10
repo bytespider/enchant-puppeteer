@@ -1,7 +1,7 @@
 # Enchant Puppeteer
 
-This package charms mighty [Puppeteer](https://github.com/puppeteer/puppeteer) into supporting multiple, cooperative request
-interceptions.
+Charm the mighty [Puppeteer](https://github.com/puppeteer/puppeteer) into supporting multiple, cooperative request
+intercept handlers. No more `Request is already handled!` errors.
 
 Compatible with Puppeteer 3.x or greater.
 
@@ -10,7 +10,7 @@ Compatible with Puppeteer 3.x or greater.
 It solves a long-standing Puppeteer issue where multiple request intercept handlers would not work together because the first
 one to call `abort()`, `respond()`, or `continue()` would prevent all the others from responding.
 
-Cooperative means that Puppeteer will allow multiple request intercept handlers to play nicely together by execututing each and
+After enchantment, Puppeteer will allow multiple request intercept handlers to play nicely together by execututing each and
 allowing each handler to call `abort()`, `respond()`, or `continue()`. After all handlers have run, including asynchronous handlers,
 Enchant Puppeteer will decide how to finalize the request interception:
 
