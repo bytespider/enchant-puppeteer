@@ -101,39 +101,24 @@ const { enchantPuppeteer } = require('enchant-puppeteer')
 
 ### Async Intercept Handlers
 
-You may often have a need to perform async operations in during the request interception. Puppeteer
-automatically pauses request resolution until all handlers complete. This now includes
-waiting for all async request handler operations to resolve.
+Enchanted Puppeteer will wait for your asynchronous intercept handler to finish before deciding what to do
+with the request.
 
 ```typescript
-const puppeteer = require('puppeteer');
-
-(async () => {
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-
-  // This is required, otherwise the below operations will throw an exception.
-  await page.setRequestInterception(true);
-
-  /**
-   * Async example. Pupeteer will not fulfill the request until this and all deferred operations
-   * has been completed.
-   */
-  page.on('request', (req) => {
-    req.defer(async () => {
-      // do something async like a database lookup
-      const cachedPage = await db.find(req.url());
-      if (cachedPage) {
-        request.respond(cachedPage); // Respond with the cached page, if available
-      }
-    });
+/**
+ * Pupeteer will pause request fulfillment until this and all handlers (async or not)
+ * have been completed.
+ */
+page.on('request', (req) => {
+  req.defer(async () => {
+    // do something async like a database lookup
+    const cachedPage = await db.find(req.url());
+    if (cachedPage) {
+      request.respond(cachedPage); // Respond with the cached page, if available
+    }
   });
+});
 
-  await page.goto('https://example.com');
-  await page.screenshot({ path: 'example.png' });
-
-  await browser.close();
-})();
 ```
 
 ### Enchanting a non-standard Puppeteer module path

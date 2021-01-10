@@ -88,7 +88,7 @@ export const enchantHTTPRequest = (options: EnchantOptions) => {
     obj.deferredRequestHandlers = []
     interceptedHTTPRequests[interceptionId] = obj
 
-    obj.defer = function (fn) {
+    obj.defer = function (fn: DeferredRequestHandler) {
       this.deferredRequestHandlers.push(fn)
     }
 

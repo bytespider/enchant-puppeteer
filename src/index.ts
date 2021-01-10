@@ -1,5 +1,6 @@
 import { EnchantedHTTPRequest, enchantHTTPRequest } from './enchantHTTPRequest'
 import { enchantNetworkManager } from './enchantNetworkManager'
+import { enchantPage } from './enchantPage'
 import { createLogger, Logger, LogOptions } from './log'
 
 export const interceptedHTTPRequests: {
@@ -25,6 +26,7 @@ export const enchantPuppeteer = (options?: Partial<EnchantInitOptions>) => {
   const { modulePath, logger } = _options
   const { error, info } = logger
   info(`Enchanting ${modulePath}`)
+  enchantPage(_options)
   enchantHTTPRequest(_options)
   enchantNetworkManager(_options)
 }
