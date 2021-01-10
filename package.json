@@ -7,7 +7,9 @@
   "repository": "github:benallfree/enchant-puppeteer",
   "license": "MIT",
   "scripts": {
-    "build": "rimraf dist && tsc",
+    "clean": "rimraf dist",
+    "watch": "yarn clean && tsc -w",
+    "build": "yarn clean && tsc",
     "test:stock": "ts-node ./test/cli.ts",
     "test:extra": "ts-node ./test/extra/cli.ts"
   },
@@ -23,6 +25,7 @@
     "typescript": "^4.1.3"
   },
   "dependencies": {
+    "@types/node": "^14.14.20",
     "@types/puppeteer": "^5.4.2",
     "puppeteer": "^5.5.0"
   },

@@ -1,10 +1,11 @@
 import Protocol from 'devtools-protocol'
-import { Overrides, Request, RespondOptions } from 'puppeteer'
+import { resolve } from 'path'
+import { Request } from 'puppeteer'
 import { CDPSession } from 'puppeteer/lib/cjs/puppeteer/common/Connection'
 import { EventEmitter } from 'puppeteer/lib/cjs/puppeteer/common/EventEmitter'
 import { Frame } from 'puppeteer/lib/cjs/puppeteer/common/FrameManager'
 import { debugError } from 'puppeteer/lib/cjs/puppeteer/common/helper'
-import * as HTTPRequestModule from 'puppeteer/lib/cjs/puppeteer/common/HTTPRequest'
+import { HTTPRequest } from 'puppeteer/lib/cjs/puppeteer/common/HTTPRequest'
 import { Handler } from 'puppeteer/lib/cjs/vendor/mitt/src'
 import { interceptedHTTPRequests } from '.'
 
@@ -15,7 +16,7 @@ declare module 'puppeteer' {
     isEnchanted: boolean
     continueRequestOverrides?: Overrides
     responseForRequest?: RespondOptions
-    abortErrorCode?: HTTPRequestModule.ErrorCode
+    abortErrorCode?: ErrorCode
     shouldContinue: boolean
     shouldRespond: boolean
     shouldAbort: boolean
@@ -40,15 +41,42 @@ export const RequestInterceptionOutcome = {
   Finalized: 'finalized',
 } as const
 
-export const enchantHTTPRequest = () => {
-  const oldKlass = HTTPRequestModule.HTTPRequest
+export const enchantHTTPRequest = (modulePath: string) => {
+  const { HTTPRequestModule, oldKlass } = (() => {
+    // 5.x
+    try {
+      return (() => {
+        const path = resolve(modulePath, 'lib/cjs/puppeteer/common/HTTPRequest')
+        const HTTPRequestModule = require(path)
+        const oldKlass = HTTPRequestModule.HTTPRequest as typeof HTTPRequest
+        console.log(`Enchanting HTTPRequest ${path}`)
+        return { HTTPRequestModule, oldKlass }
+      })()
+    } catch {}
+
+    // 4.x, 3.x
+    try {
+      return (() => {
+        const path = resolve(modulePath, 'lib/HTTPRequest')
+        const HTTPRequestModule = require(path)
+        const oldKlass = HTTPRequestModule.HTTPRequest as typeof HTTPRequest
+        console.log(`Enchanting HTTPRequest ${path}`)
+        return { HTTPRequestModule, oldKlass }
+      })()
+    } catch {}
+
+    throw new Error(
+      `HTTPRequest not found at ${modulePath}. Only Puppeteer 3.x or above is supported, or your module path is wrong.`
+    )
+  })()
+
   const klass = function (
     client: CDPSession,
     frame: Frame,
     interceptionId: string,
     allowInterception: boolean,
     event: Protocol.Network.RequestWillBeSentEvent,
-    redirectChain: HTTPRequestModule.HTTPRequest[]
+    redirectChain: HTTPRequest[]
   ) {
     const obj = (new oldKlass(
       client,

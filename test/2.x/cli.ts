@@ -1,8 +1,8 @@
 import puppeteer from 'puppeteer'
-import { enchantPuppeteer } from '../dist'
+import { enchantPuppeteer } from '../../dist'
 
 puppeteer.launch().then(async (browser) => {
-  enchantPuppeteer()
+  enchantPuppeteer(`${__dirname}/node_modules/puppeteer`)
 
   const page = await browser.newPage()
   page.setRequestInterception(true)

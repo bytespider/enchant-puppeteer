@@ -3,6 +3,13 @@
 This package charms mighty [Puppeteer](https://github.com/puppeteer/puppeteer) into supporting multiple, cooperative request
 interceptions.
 
+Compatible with Puppeteer 3.x or greater.
+
+## What does it do?
+
+It solves a long-standing Puppeteer issue where multiple request intercept handlers would not work together because the first
+one to call `abort()`, `respond()`, or `continue()` would prevent all the others from responding.
+
 Cooperative means that Puppeteer will allow multiple request intercept handlers to play nicely together by execututing each and
 allowing each handler to call `abort()`, `respond()`, or `continue()`. After all handlers have run, including asynchronous handlers,
 Enchanted Puppeteer will decide how to finalize the request interception:
@@ -17,9 +24,7 @@ Enchanted Puppeteer will decide how to finalize the request interception:
 npm i enchanted-puppeteer
 ```
 
-## Usage
-
-### Basic Request Interception Usage
+## Basic Request Interception Usage
 
 This example shows how `abort()`, `continue()`, and `respond()` are used cooperatively. This way, different
 concerns can be listening to `page.on('request', ...)` and cooperatively handle what to do.
@@ -79,7 +84,7 @@ const { enchantPuppeteer } = require('enchant-puppeteer')
 })();
 ```
 
-# Async Request Interception Usage
+## Async Request Interception Usage
 
 You may often have a need to perform async operations in during the request interception. Puppeteer
 automatically pauses request resolution until all handlers complete. This now includes
@@ -115,3 +120,16 @@ const puppeteer = require('puppeteer');
   await browser.close();
 })();
 ```
+
+## Advaced Usage: Enchanting a non-standard Puppeteer module path
+
+Occasionally, you may find that the Puppeteer module you need to enchant is not in `./node_modules/puppeteer`. This could happen with
+Yarn workspaces or any situation where you're running multiple versions of Puppeteer dependencies.
+
+In that case, give `enchantPuppeteer` the exact path to the module you want to enchant:
+
+```typescript
+enchantPuppeteer('/path/to/module/puppeteer')
+```
+
+You can enchat multiple Puppeteer modules as well.
