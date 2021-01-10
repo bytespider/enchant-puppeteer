@@ -5,7 +5,7 @@ import type { EventEmitter } from 'puppeteer/lib/cjs/puppeteer/common/EventEmitt
 import type { Frame } from 'puppeteer/lib/cjs/puppeteer/common/FrameManager'
 import type { HTTPRequest } from 'puppeteer/lib/cjs/puppeteer/common/HTTPRequest'
 import type { Handler } from 'puppeteer/lib/cjs/vendor/mitt/src'
-import { interceptedHTTPRequests } from '.'
+import { EnchantOptions, interceptedHTTPRequests } from '.'
 import { findModule } from './findModule'
 
 export type DeferredRequestHandler = () => PromiseLike<void>
@@ -40,24 +40,29 @@ export const RequestInterceptionOutcome = {
   Finalized: 'finalized',
 } as const
 
-const enchanted = {}
-
-export const enchantHTTPRequest = (modulePath: string) => {
-  const HTTPRequestModule = findModule(modulePath, 'HTTPRequest')
+export const enchantHTTPRequest = (options: EnchantOptions) => {
+  const { modulePath, logger } = options
+  const { error, info, debug } = logger
+  const HTTPRequestModule = findModule(options, 'HTTPRequest')
   const oldKlass = HTTPRequestModule.HTTPRequest as typeof HTTPRequest & {
     isEnchanted?: boolean
   }
 
-  if (oldKlass.isEnchanted) return
+  if (oldKlass.isEnchanted) {
+    debug(`HTTPRequest is already enchanted`)
+    return
+  }
+
+  info(`Enchanting HTTPRequest`)
 
   const _EventEmitter = (() => {
     try {
-      return require(findModule(modulePath, 'EventEmitter')).EventEmitter
+      return require(findModule(options, 'EventEmitter')).EventEmitter
     } catch {
       return require('events') // 3.x
     }
   })()
-  const debugError = findModule(modulePath, 'helper').debugError
+  const debugError = findModule(options, 'helper').debugError
 
   const klass = function (
     client: CDPSession,
@@ -130,7 +135,7 @@ export const enchantHTTPRequest = (modulePath: string) => {
                 this._finalizeEmitter.emit(RequestInterceptionOutcome.Finalized)
               })
               .catch((e) => {
-                console.error(e)
+                error(e)
               })
           }
           if (this.shouldRespond)
@@ -147,7 +152,7 @@ export const enchantHTTPRequest = (modulePath: string) => {
                   )
                 })
                 .catch((e) => {
-                  console.error(e)
+                  error(e)
                 })
             )
           return oldContinue
@@ -157,12 +162,11 @@ export const enchantHTTPRequest = (modulePath: string) => {
               this._finalizeEmitter.emit(RequestInterceptionOutcome.Finalized)
             })
             .catch((e) => {
-              console.error(e)
+              error(e)
             })
         })
         .catch((error) => {
-          console.error(error)
-
+          error(error)
           debugError(error)
         })
         .finally(() => {

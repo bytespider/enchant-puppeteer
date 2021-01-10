@@ -1,17 +1,22 @@
 import { resolve } from 'path'
+import { EnchantOptions } from '.'
 
-export const findModule = (rootPath: string, moduleName: string) => {
+export const findModule = (options: EnchantOptions, moduleName: string) => {
+  const { modulePath, logger } = options
+  const { info, error } = logger
   const paths = ['lib/cjs/puppeteer/common', 'lib'] // 5.x, 4.x, 3.x
   for (let i = 0; i < paths.length; i++) {
-    const path = resolve(rootPath, paths[i], moduleName)
+    const path = resolve(modulePath, paths[i], moduleName)
     try {
       const module = require(path)
-      console.log(`Enchanting ${path}`)
+      info(`Enchanting ${path}`)
       return module
-    } catch {}
+    } catch (e) {
+      error(e)
+    }
   }
 
-  throw new Error(
-    `Could not enchant any version of ${moduleName} on ${rootPath}. Only Puppeteer 3.x or above is supported, or your module path is wrong.`
-  )
+  const msg = `Could not enchant any version of ${moduleName} on ${modulePath}. Only Puppeteer 3.x or above is supported, or your module path is wrong.`
+  error(msg)
+  throw new Error(msg)
 }

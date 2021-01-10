@@ -2,8 +2,8 @@ import puppeteer from 'puppeteer'
 import { enchantPuppeteer } from '../../dist'
 
 puppeteer.launch().then(async (browser) => {
-  enchantPuppeteer(`${__dirname}/node_modules/puppeteer`)
-  enchantPuppeteer(`${__dirname}/node_modules/puppeteer`)
+  enchantPuppeteer({ modulePath: `${__dirname}/node_modules/puppeteer` })
+  enchantPuppeteer({ modulePath: `${__dirname}/node_modules/puppeteer` })
 
   const page = await browser.newPage()
   page.setRequestInterception(true)

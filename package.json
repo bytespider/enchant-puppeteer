@@ -1,6 +1,6 @@
 {
   "name": "enchant-puppeteer",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Cooperative request interception for Puppeteer",
   "main": "dist/index.js",
   "author": "Ben Allfree (@benallfree)",

@@ -129,7 +129,17 @@ Yarn workspaces or any situation where you're running multiple versions of Puppe
 In that case, give `enchantPuppeteer` the exact path to the module you want to enchant:
 
 ```typescript
-enchantPuppeteer('/path/to/module/puppeteer')
+enchantPuppeteer({ modulePath: '/path/to/module/puppeteer'} )
 ```
 
 You can enchat multiple Puppeteer modules as well.
+
+## Advanced Usage: Debugging
+
+```typescript
+// info
+// error (default)
+// debug
+// none
+enchantPuppeteer({ logLevel: 'info' })
+```
