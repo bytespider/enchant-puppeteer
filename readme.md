@@ -84,7 +84,18 @@ const { enchantPuppeteer } = require('enchant-puppeteer')
 })();
 ```
 
-## Async Request Interception Usage
+## Options
+
+`enchantPuppeteer({...options})` as follows:
+
+| Name       | Meaning                                      | Allowed Values                      | Default                    |
+| ---------- | -------------------------------------------- | ----------------------------------- | -------------------------- |
+| modulePath | Path to the Puppeteer module to be enchanted | any valid Puppeteer module path     | `./node_modules/puppeteer` |
+| logLevel   | Logging level                                | `info`, `debug`, `error`, or `none` | `none`                     |
+
+## Advanced Usage
+
+### Async Intercept Handlers
 
 You may often have a need to perform async operations in during the request interception. Puppeteer
 automatically pauses request resolution until all handlers complete. This now includes
@@ -121,7 +132,7 @@ const puppeteer = require('puppeteer');
 })();
 ```
 
-## Advaced Usage: Enchanting a non-standard Puppeteer module path
+### Enchanting a non-standard Puppeteer module path
 
 Occasionally, you may find that the Puppeteer module you need to enchant is not in `./node_modules/puppeteer`. This could happen with
 Yarn workspaces or any situation where you're running multiple versions of Puppeteer dependencies.
@@ -134,7 +145,7 @@ enchantPuppeteer({ modulePath: '/path/to/module/puppeteer'} )
 
 You can enchat multiple Puppeteer modules as well.
 
-## Advanced Usage: Debugging
+### Debugging
 
 ```typescript
 // info
