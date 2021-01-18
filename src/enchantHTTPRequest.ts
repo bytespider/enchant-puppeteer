@@ -165,9 +165,9 @@ export const enchantHTTPRequest = (options: EnchantOptions) => {
               error(e)
             })
         })
-        .catch((error) => {
-          error(error)
-          debugError(error)
+        .catch((e) => {
+          error(e)
+          debugError(e)
         })
         .finally(() => {
           delete interceptedHTTPRequests[interceptionId]
