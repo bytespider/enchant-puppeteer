@@ -15,6 +15,9 @@
     "test:4x": "yarn && yarn build && cd test/5.x && yarn && ts-node cli.ts",
     "test:3x": "yarn && yarn build && cd test/5.x && yarn && ts-node cli.ts"
   },
+  "peerDependencies": {
+      "puppeteer": ">=3"
+  },
   "devDependencies": {
     "install-peers-cli": "^2.2.0",
     "prettier": "^2.2.1",
@@ -28,8 +31,7 @@
   },
   "dependencies": {
     "@types/node": "^14.14.20",
-    "@types/puppeteer": "^5.4.2",
-    "puppeteer": ">=3"
+    "@types/puppeteer": "^5.4.2"
   },
   "resolutions": {
     "@types/puppeteer": "^5.4.2"
